@@ -35,13 +35,14 @@
         app:layout_constraintTop_toBottomOf="@+id/frameLayout">
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/guess_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:digits="abcdefghijklmnopqrstuvwxyz"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name" />
+            android:maxLength="1" />
 
         <Button
             android:id="@+id/guess_button"
@@ -61,6 +62,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/secret_word"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
