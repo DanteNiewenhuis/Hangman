@@ -8,105 +8,88 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.util.Log;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
 
     private boolean DEBUG = true;
-    private int guesses_left = 6;
-    private char[] guessed_letters = new char[26];
-    private int ArrayIndex = 0;
+    private int guesses_left;
+    private char[] guessed_letters;
+    private int ArrayIndex;
     private String secret_word;
+    private Dictionary dict;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        
         if (savedInstanceState != null) {
             guesses_left = savedInstanceState.getInt("guesses_left");
             guessed_letters = savedInstanceState.getCharArray("guessed_letters");
             ArrayIndex = savedInstanceState.getInt("ArrayIndex");
             secret_word = savedInstanceState.getString("secret_word");
+            update_game();
         }
         else {
-            secret_word = get_secret_word();
+            try {
+                dict = new Dictionary(getApplicationContext());
+            } catch (IOException | XmlPullParserException e) {
+                e.printStackTrace();
+            }
+            secret_word = dict.new_word();
+            Log.d("SECRET WORD", secret_word);
+            guesses_left = 6;
+            guessed_letters = new char[26];
+            ArrayIndex = 0;
         }
 
+        TextView info = findViewById(R.id.info_text);
+        info.setText(R.string.info_text);
         update_game();
     }
 
     public void guess (View v) {
-        if (DEBUG) {
-            Log.d("guess checker", "in function");
-        }
-
+        //TODO make multiple letters possible to input
         EditText input = findViewById(R.id.guess_input);
-        if (DEBUG) {
-            Log.d("guess checker", "found id");
-        }
-        char guess = input.getText().toString().charAt(0);
-        if (DEBUG) {
-            Log.d("guess checker", "got input char");
-        }
-
-        //TODO check for an empty input!!!
-        if (inArray(guessed_letters, guess)) {
+        String guess = input.getText().toString();
+        if (guess.matches("")) {
             return;
         }
 
-        guessed_letters[ArrayIndex] = guess;
+        char guess_char = guess.charAt(0);
+        TextView info = findViewById(R.id.info_text);
+        if (inArray(guessed_letters, guess_char)) {
+            info.setText(R.string.already_guessed);
+            return;
+        }
+
+        guessed_letters[ArrayIndex] = guess_char;
         ArrayIndex++;
-        if (DEBUG) {
-            Log.d("guess checker", "added char to array");
-        }
-
-        if (secret_word.indexOf(guess) == -1) {
+        if (secret_word.indexOf(guess_char) == -1) {
             guesses_left--;
-        }
-
-        if (DEBUG) {
-            Log.d("guess checker", "checked if char in string");
         }
         update_game();
     }
 
     public void new_game (View v) {
-        if (DEBUG) {
-            Log.d("new checker", "check");
-        }
-
         guesses_left = 6;
-        guessed_letters = null;
-        secret_word = get_secret_word();
+        guessed_letters = new char[26];
+        ArrayIndex = 0;
+        secret_word = dict.new_word();
+        TextView info = findViewById(R.id.info_text);
+        info.setText(R.string.info_text);
         update_game();
     }
 
     private void update_game() {
-        if (DEBUG) {
-            Log.d("update_game", "start");
-        }
-
         ImageView image = findViewById(R.id.process_image);
-
-        if (DEBUG) {
-            Log.d("update_game", "got image");
-        }
-
         int resID = getResources().getIdentifier( "hangman" + guesses_left, "drawable", getPackageName());
-        if (DEBUG) {
-            Log.d("update_game", "got ID");
-        }
-
 
         image.setImageResource(resID);
-        if (DEBUG) {
-            Log.d("update_game", "changed image");
-        }
-
         TextView t = findViewById(R.id.guess_text);
-        if (DEBUG) {
-            Log.d("update_game", "got textView");
-        }
-
         String input = "You have guessed : ";
 
         if (guessed_letters != null) {
@@ -115,11 +98,6 @@ public class MainActivity extends AppCompatActivity {
         }
         input += " (" + guesses_left + " guesses left)";
         t.setText(input);
-
-        if (DEBUG) {
-            Log.d("update_game", "changed text");
-        }
-
         t = findViewById(R.id.secret_word);
         input = "";
         int letters_to_guess = 0;
@@ -137,10 +115,19 @@ public class MainActivity extends AppCompatActivity {
         t.setText(input);
 
         if (guesses_left == 0 || letters_to_guess == 0) {
-            if (DEBUG) {
-                Log.d("update_game", "game is done");
+
+            String info_string;
+            if (guesses_left == 0) {
+                info_string = "You have lost.";
             }
-            //TODO check if the game is finished
+            else {
+                info_string = "You have won!!";
+            }
+
+            info_string += " Click New to start another game.";
+            TextView info = findViewById(R.id.info_text);
+            info.setText(info_string);
+
             //TODO if finished disable the input and the guess button
         }
 
@@ -160,15 +147,8 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private String get_secret_word() {
-        return "secret_word";
-    }
-
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (DEBUG) {
-            Log.d("save checker", "check");
-        }
 
         outState.putInt("guesses_left", guesses_left);
         outState.putInt("ArrayIndex", ArrayIndex);
