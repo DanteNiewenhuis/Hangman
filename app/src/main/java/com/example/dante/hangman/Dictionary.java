@@ -7,14 +7,16 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Dictionary {
+public class Dictionary implements Serializable {
     private ArrayList<String> words = new ArrayList<>();
 
 
     public Dictionary (Context context) throws IOException, XmlPullParserException {
+        System.out.println("dict init");
         XmlResourceParser xpp = context.getResources().getXml(R.xml.dictionary);
         while (xpp.getEventType()!=XmlPullParser.END_DOCUMENT) {
             if (xpp.getEventType()==XmlPullParser.START_TAG) {
