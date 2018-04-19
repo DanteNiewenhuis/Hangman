@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Hangman</string>
+    <string name="guess_button">Guess</string>
+    <string name="new_button">New</string>
+    <string name="info_text">Write a letter and see if it is in the word by pushing guess.</string>
+    <string name="already_guessed">You have already guessed this letter, please try another.</string>
+    <string name="lost">Write a letter and see if it is in the word by pushing guess.</string>
+    <string name="won">Write a letter and see if it is in the word by pushing guess.</string>
 </resources>
