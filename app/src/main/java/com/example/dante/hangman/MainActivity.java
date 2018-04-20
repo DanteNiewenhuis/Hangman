@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -119,9 +118,15 @@ public class MainActivity extends AppCompatActivity {
         EditText guess_input = findViewById(R.id.guess_input);
         guess_input.setText("");
         guess_input.requestFocus();
-        InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,1);
 
+        TextView games_info = findViewById(R.id.games_info);
+        TextView won_info = findViewById(R.id.won_info);
+        String games_played = "Games Played: " + game.get_games_played();
+        games_info.setText(games_played);
+        String games_won = "Games Won: " + game.get_games_won();
+        won_info.setText(games_won);
     }
 
     public void onSaveInstanceState(Bundle outState) {

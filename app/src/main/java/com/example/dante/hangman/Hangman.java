@@ -7,9 +7,13 @@ public class Hangman implements Serializable{
     private int ArrayIndex;
     private String secret_word;
     private int letters_to_guess;
+    private int games_played;
+    private int games_won;
 
     public Hangman(Dictionary dict) {
         // start a game
+        games_played = 0;
+        games_won = 0;
         new_game(dict);
     }
 
@@ -60,9 +64,12 @@ public class Hangman implements Serializable{
 
     public String isFinished() {
         if (guesses_left == 0) {
+            games_played++;
             return "You have lost, the secret word was \"" + secret_word + "\"";
         }
         if (letters_to_guess == 0) {
+            games_played++;
+            games_won++;
             return "You have won";
         }
         return "no";
@@ -100,4 +107,11 @@ public class Hangman implements Serializable{
         return false;
     }
 
+    public String get_games_played() {
+        return String.valueOf(games_played);
+    }
+
+    public String get_games_won() {
+        return String.valueOf(games_won);
+    }
 }
