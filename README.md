@@ -1,7 +1,6 @@
 # Hangman
 Dante Niewenhuis, 11058595
 
-
 ![picture of the app in landscape mode](/doc/landscape.png)
 
 In this app you can play the classic game of hangman. Guess a letter by inputting typing it in the input box and press guess,
