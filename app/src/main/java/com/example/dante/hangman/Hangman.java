@@ -1,10 +1,4 @@
 package com.example.dante.hangman;
-
-import android.app.Activity;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import java.io.Serializable;
 
 public class Hangman implements Serializable{
@@ -12,106 +6,92 @@ public class Hangman implements Serializable{
     private char[] guessed_letters;
     private int ArrayIndex;
     private String secret_word;
+    private int letters_to_guess;
 
-    public Hangman(Activity Main, Dictionary dict) {
-        System.out.println("hangman init");
-        new_game(Main, dict);
+    public Hangman(Dictionary dict) {
+        // start a game
+        new_game(dict);
     }
 
-    public void new_game (Activity activity, Dictionary dict) {
-        System.out.println("new game");
+    public void new_game (Dictionary dict) {
+        // init variables
         guesses_left = 6;
         guessed_letters = new char[26];
         ArrayIndex = 0;
         secret_word = dict.new_word();
         System.out.println("SECRET WORD == " + secret_word);
 
-        TextView info = activity.findViewById(R.id.info_text);
-        info.setText(R.string.info_text);
-        update_game(activity);
     }
 
-    public void guess (Activity activity) {
-        //TODO make multiple letters possible to input
-        EditText input = activity.findViewById(R.id.guess_input);
-        String guess = input.getText().toString();
-        if (guess.matches("")) {
-            return;
-        }
-
-        char guess_char = guess.charAt(0);
-        TextView info = activity.findViewById(R.id.info_text);
+    public String guess (char guess_char) {
         if (inArray(guessed_letters, guess_char)) {
-            info.setText(R.string.already_guessed);
-            return;
+            return "already_guessed";
         }
 
+        // add the char to the list of guessed letters
         guessed_letters[ArrayIndex] = guess_char;
         ArrayIndex++;
+
+        // increment guesses left if the guess is not present in the secret word
         if (secret_word.indexOf(guess_char) == -1) {
             guesses_left--;
         }
-        update_game(activity);
+
+        return "";
     }
 
-
-
-    public void update_game(Activity activity) {
-        ImageView image = activity.findViewById(R.id.process_image);
-        int resID = activity.getResources().getIdentifier( "hangman" + guesses_left,
-                                            "drawable", activity.getPackageName());
-
-        image.setImageResource(resID);
-        TextView t = activity.findViewById(R.id.guess_text);
-        String input = "You have guessed : ";
-
-        if (guessed_letters != null) {
-            for (char guess : guessed_letters) input += guess;
-
-        }
-        input += " (" + guesses_left + " guesses left)";
-        t.setText(input);
-        t = activity.findViewById(R.id.secret_word);
-        input = "";
-        int letters_to_guess = 0;
-        for (int i = 0; i < secret_word.length(); i++){
-            char c = secret_word.charAt(i);
+    public String get_secret_word() {
+        String result = "";
+        char c;
+        letters_to_guess = 0;
+        for (int i = 0; i < secret_word.length(); i++) {
+            c = secret_word.charAt(i);
             if (inArray(guessed_letters, c)) {
-                input += c;
+                result += c;
             }
             else {
-                input += '?';
-                letters_to_guess += 1;
+                result += '?';
+                letters_to_guess++;
             }
         }
 
-        t.setText(input);
+        return result;
+    }
 
-        if (guesses_left == 0 || letters_to_guess == 0) {
+    public String isFinished() {
+        if (guesses_left == 0) {
+            return "You have lost, the secret word was \"" + secret_word + "\"";
+        }
+        if (letters_to_guess == 0) {
+            return "You have won";
+        }
+        return "no";
+    }
 
-            String info_string;
-            if (guesses_left == 0) {
-                info_string = "You have lost.";
-            }
-            else {
-                info_string = "You have won!!";
-            }
-
-            info_string += " Click New to start another game.";
-            TextView info = activity.findViewById(R.id.info_text);
-            info.setText(info_string);
-
-            //TODO if finished disable the input and the guess button
+    public String get_guessed_letters() {
+        if (guessed_letters == null) {
+            return "";
+        }
+        String result = "";
+        for (char c : guessed_letters) {
+            result += c;
         }
 
-        EditText guess_input = activity.findViewById(R.id.guess_input);
-        guess_input.setText("");
+        return result;
+    }
+
+    public int get_guesses_left() {
+        return guesses_left;
     }
 
     private boolean inArray (char[] Array, char value) {
+
+        // if the array is null return false
         if (Array == null) {
             return false;
         }
+
+        // loop through array to see if value is in it, return true if so.
         for (char c : Array) {
             if (c == value) {
                 return true;

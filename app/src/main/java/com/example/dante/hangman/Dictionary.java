@@ -16,7 +16,7 @@ public class Dictionary implements Serializable {
 
 
     public Dictionary (Context context) throws IOException, XmlPullParserException {
-        System.out.println("dict init");
+
         XmlResourceParser xpp = context.getResources().getXml(R.xml.dictionary);
         while (xpp.getEventType()!=XmlPullParser.END_DOCUMENT) {
             if (xpp.getEventType()==XmlPullParser.START_TAG) {
